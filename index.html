@@ -1,384 +1,252 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>프리미엄 수분 트래커 💧</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>수분 트래커 💧</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <style>
+        @font-face {
+            font-family: 'GmarketSansBold';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+            font-weight: normal; font-style: normal;
+        }
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal; font-style: normal;
+        }
+
+        :root {
+            --bg-color: #f7f6f0;
+            --card-bg: #ffffff;
+            --card-inner-bg: #f0eee6;
+            --accent-blue: #5b8fb9;
+            --accent-light: #e3edf7;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --border-color: #e5e2d8;
+            --danger: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Pretendard', -apple-system, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px 16px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .header-title {
+            font-family: 'GmarketSansBold', sans-serif;
+            font-size: 20px;
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-title {
+            font-family: 'GmarketSansMedium', sans-serif;
+            font-size: 14px;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .water-hero { text-align: center; padding: 24px 16px; }
+        .water-percent { font-family: 'GmarketSansBold', sans-serif; font-size: 46px; color: var(--accent-blue); line-height: 1.1; }
+        .water-amount-detail { font-size: 15px; color: var(--text-sub); margin-top: 6px; font-weight: 500; }
+        
+        .water-progress-bg { background-color: var(--card-inner-bg); height: 14px; border-radius: 7px; overflow: hidden; margin: 18px 0 10px 0; }
+        .water-progress-fill { background: linear-gradient(90deg, #7fb3d5, #5b8fb9); height: 100%; width: 0%; transition: width 0.4s ease-out; border-radius: 7px; }
+
+        .drink-types { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+        .drink-chip { background-color: var(--card-inner-bg); border: 1px solid transparent; border-radius: 12px; padding: 10px 4px; text-align: center; font-size: 12px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
+        .drink-chip.active { background-color: var(--accent-light); border-color: var(--accent-blue); color: var(--accent-blue); font-weight: bold; }
+
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+        .btn-water-add { background-color: var(--card-inner-bg); border: none; border-radius: 12px; padding: 12px 0; font-family: 'GmarketSansBold', sans-serif; font-size: 13px; color: var(--text-main); cursor: pointer; }
+        .btn-water-sub { background-color: #fce8e6; border: none; border-radius: 12px; padding: 10px 0; font-size: 12px; color: var(--danger); cursor: pointer; }
+        .btn-full-width { width: 100%; background-color: var(--card-inner-bg); border: none; border-radius: 12px; padding: 10px 0; font-size: 12px; color: var(--text-sub); cursor: pointer; margin-bottom: 8px; }
+
+        .alarm-box { background-color: var(--card-inner-bg); border-radius: 14px; padding: 12px; font-size: 11px; color: var(--text-sub); line-height: 1.5; }
+
+        /* 모바일 팝업 모달 최적화 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .modal-box {
+            background: #ffffff;
+            width: 85%;
+            max-width: 320px;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </head>
-<body class="bg-[#F9F6F0] text-[#4A4238] min-h-screen flex items-center justify-center p-4">
+<body>
 
-  <div class="bg-[#F2EFE9] rounded-3xl shadow-xl p-6 w-full max-w-md border border-[#E5E0D8] relative">
-    <!-- 헤더 -->
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-[#6B8E9B]">수분 트래커 💧</h1>
-        <p class="text-xs text-[#8C8275]">목표: 2,300 ml (하루 8잔)</p>
-      </div>
-      <button onclick="requestNotification()" class="bg-[#6B8E9B] hover:bg-[#5A7985] text-white text-xs px-3 py-2 rounded-xl transition shadow-sm">
-        🔔 알람 설정
-      </button>
+<div class="container">
+
+    <div class="header">
+        <div class="header-title">수분 트래커 💧</div>
+        <div style="font-size: 11px; color: var(--text-sub);">하루 목표: 2,300 ml (8잔)</div>
     </div>
 
-    <!-- 메인 수치 및 진행률 -->
-    <div class="text-center my-6 bg-[#FAF8F5] p-6 rounded-2xl border border-[#E8E3DA] shadow-inner relative">
-      <div class="text-5xl font-black text-[#587B88] mb-2">
-        <span id="total-water">0</span> <span class="text-xl font-normal text-[#9E9385]">/ 2,300 ml</span>
-      </div>
-      <p id="glass-count" class="text-xs text-[#7A98A4] font-medium mb-4">현재 약 0 / 8잔 완료</p>
-      
-      <!-- 게이지 바 -->
-      <div class="w-full bg-[#E8E3DA] rounded-full h-4 overflow-hidden mb-3">
-        <div id="progress-bar" class="bg-gradient-to-r from-[#8CA3AD] to-[#6B8E9B] h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-      </div>
-
-      <!-- 직접 수정 버튼 -->
-      <button onclick="editWaterDirectly()" class="text-xs text-[#9E9385] hover:text-[#587B88] underline">
-        ✏️ 수치 직접 입력 수정
-      </button>
+    <!-- 메인 퍼센트 게이지 카드 -->
+    <div class="card water-hero">
+        <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 4px;">오늘의 수분 달성률</div>
+        <div class="water-percent" id="waterPercent">0%</div>
+        <div class="water-amount-detail" id="waterAmountText">0 / 2,300 ml</div>
+        
+        <div class="water-progress-bg">
+            <div class="water-progress-fill" id="waterProgressBar"></div>
+        </div>
+        
+        <div style="font-size: 12px; color: var(--text-sub);" id="waterCupCount">현재 약 0 / 8잔 완료</div>
     </div>
 
-    <!-- 음료 종류 선택 -->
-    <div class="mb-6">
-      <label class="block text-xs font-semibold text-[#8C8275] mb-2">음료 종류 선택</label>
-      <div class="grid grid-cols-4 gap-2 mb-4">
-        <button onclick="selectBeverage('water', 1.0, '💧 물')" id="btn-water" class="bev-btn bg-[#6B8E9B] text-white py-2 rounded-xl text-xs font-bold transition shadow-sm">💧 물<br>(100%)</button>
-        <button onclick="selectBeverage('coffee', 0.7, '☕ 커피')" id="btn-coffee" class="bev-btn bg-[#E8E3DA] text-[#6E6355] py-2 rounded-xl text-xs font-bold transition">☕ 커피<br>(70%)</button>
-        <button onclick="selectBeverage('tea', 0.8, '🍵 차')" id="btn-tea" class="bev-btn bg-[#E8E3DA] text-[#6E6355] py-2 rounded-xl text-xs font-bold transition">🍵 차<br>(80%)</button>
-        <button onclick="selectBeverage('sports', 1.0, '⚡ 이온')" id="btn-sports" class="bev-btn bg-[#E8E3DA] text-[#6E6355] py-2 rounded-xl text-xs font-bold transition">⚡ 이온<br>(100%)</button>
-      </div>
+    <!-- 음료 선택 및 버튼 카드 -->
+    <div class="card">
+        <div class="card-title">음료 종류 선택</div>
+        <div class="drink-types">
+            <div class="drink-chip active" onclick="selectDrink('water', 1.0, this)">💧 물<br>(100%)</div>
+            <div class="drink-chip" onclick="selectDrink('coffee', 0.7, this)">☕ 커피<br>(70%)</div>
+            <div class="drink-chip" onclick="selectDrink('tea', 0.8, this)">🍵 차<br>(80%)</div>
+            <div class="drink-chip" onclick="selectDrink('ion', 1.0, this)">⚡ 이온<br>(100%)</div>
+        </div>
 
-      <!-- 수분 추가 버튼 -->
-      <label class="block text-xs font-semibold text-[#8C8275] mb-2">수분 추가 (+)</label>
-      <div class="grid grid-cols-3 gap-2 mb-2">
-        <button onclick="addWater(250)" class="bg-[#E5DFD5] hover:bg-[#DCD5C8] text-[#4A4238] py-3 rounded-xl font-bold text-sm transition shadow-sm">+250 ml</button>
-        <button onclick="addWater(300)" class="bg-[#E5DFD5] hover:bg-[#DCD5C8] text-[#4A4238] py-3 rounded-xl font-bold text-sm transition shadow-sm">+300 ml</button>
-        <button onclick="addWater(500)" class="bg-[#E5DFD5] hover:bg-[#DCD5C8] text-[#4A4238] py-3 rounded-xl font-bold text-sm transition shadow-sm">+500 ml</button>
-      </div>
-      <button onclick="addWater(10)" class="w-full bg-[#EFECE6] hover:bg-[#E5DFD5] text-[#6E6355] py-2 rounded-xl text-xs mb-4 transition border border-[#DDD7CD]">+10 ml (한 모금)</button>
+        <div class="card-title">수분 추가 (+)</div>
+        <div class="action-grid">
+            <button class="btn-water-add" onclick="addWater(250)">+250 ml</button>
+            <button class="btn-water-add" onclick="addWater(300)">+300 ml</button>
+            <button class="btn-water-add" onclick="addWater(500)">+500 ml</button>
+        </div>
+        <button class="btn-full-width" onclick="addWater(10)">+10 ml (한 모금)</button>
 
-      <!-- 수분 차감(수정) 버튼 -->
-      <label class="block text-xs font-semibold text-[#A66E6A] mb-2">잘못 입력했을 때 차감 (-)</label>
-      <div class="grid grid-cols-2 gap-2 mb-2">
-        <button onclick="subtractWater(100)" class="bg-[#F5E8E7] hover:bg-[#EBDAD8] text-[#8C524E] border border-[#E3CECC] py-2 rounded-xl text-xs transition">-100 ml 빼기</button>
-        <button onclick="subtractWater(250)" class="bg-[#F5E8E7] hover:bg-[#EBDAD8] text-[#8C524E] border border-[#E3CECC] py-2 rounded-xl text-xs transition">-250 ml 빼기</button>
-      </div>
-      <button onclick="subtractWater(10)" class="w-full bg-[#FAF0EFF] hover:bg-[#F5E8E7] text-[#8C524E]/80 border border-[#E8D5D3] py-2 rounded-xl text-xs transition">-10 ml (한 모금 차감)</button>
+        <div class="card-title" style="margin-top: 14px; color: var(--danger);">잘못 입력했을 때 차감 (-)</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <button class="btn-water-sub" onclick="addWater(-100)">-100 ml 빼기</button>
+            <button class="btn-water-sub" onclick="addWater(-250)">-250 ml 빼기</button>
+        </div>
+        <button class="btn-full-width" style="background-color: #fce8e6; color: var(--danger);" onclick="addWater(-10)">-10 ml (한 모금 차감)</button>
     </div>
 
-    <!-- 알람 안내 박스 -->
-    <div class="bg-[#EAE4DC]/60 p-3 rounded-xl border border-[#DDD6CC] text-xs text-[#7A7063] mb-4">
-      <p class="font-semibold text-[#587B88] mb-1">⏰ 하루 8잔 알람 타임 (09:00 시작)</p>
-      <p>09:00 / 10:50 / 12:40 / 14:30 / 16:20 / 18:10 / 20:00 / 22:00</p>
+    <!-- 알림 타임 안내 -->
+    <div class="alarm-box">
+        <div style="font-weight: bold; color: var(--text-main); margin-bottom: 4px;">⏰ 하루 8잔 권장 타임</div>
+        09:00 / 10:50 / 12:40 / 14:30 / 16:20 / 18:10 / 20:00 / 22:00
     </div>
 
-    <!-- 하단 메뉴 버튼 -->
-    <div class="flex justify-between items-center text-xs text-[#A3988B] border-t border-[#DDD6CC] pt-4">
-      <button onclick="openHistoryModal()" class="hover:text-[#587B88] font-medium flex items-center gap-1">
-        📊 수분 통계 분석 (그래프)
-      </button>
-      <button onclick="resetWater()" class="hover:text-[#6E6355] underline">오늘 기록 초기화</button>
+</div>
+
+<!-- 목표 달성 축하 팝업 모달 -->
+<div id="congratModal" class="modal-overlay">
+    <div class="modal-box">
+        <div style="font-size: 48px; margin-bottom: 8px;">🏆</div>
+        <h3 style="font-family: 'GmarketSansBold'; color: #2c3e50; font-size: 18px; margin-bottom: 8px;">목표 달성 성공!</h3>
+        <p style="font-size: 13px; color: #7f8c8d; line-height: 1.5; margin-bottom: 20px;">
+            오늘 목표 수분을 모두 마셨습니다!<br>Hydration Master 배지 획득 💧✨
+        </p>
+        <button onclick="closeModal()" style="width: 100%; background-color: var(--accent-blue); color: #ffffff; border: none; padding: 12px 0; border-radius: 12px; font-family: 'GmarketSansMedium'; font-size: 14px; cursor: pointer;">확인</button>
     </div>
-  </div>
+</div>
 
-  <!-- 통계 분석 모달 -->
-  <div id="history-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-[#F2EFE9] rounded-2xl p-6 w-full max-w-sm border border-[#E5E0D8] shadow-2xl">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-bold text-[#587B88]">📊 수분 통계 리포트</h2>
-        <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
-      </div>
+<script>
+    let targetWater = 2300;
+    let currentWater = 0; // 시작 시 0ml부터 출발
+    let currentDrinkEfficiency = 1.0;
+    let isGoalAchieved = false;
 
-      <!-- 탭 선택 -->
-      <div class="grid grid-cols-4 gap-1 bg-[#E8E3DA] p-1 rounded-xl mb-4 text-xs font-semibold">
-        <button onclick="switchTab('daily')" id="tab-daily" class="tab-btn py-1.5 rounded-lg transition bg-[#6B8E9B] text-white">일별</button>
-        <button onclick="switchTab('weekly')" id="tab-weekly" class="tab-btn py-1.5 rounded-lg transition text-[#6E6355]">주간</button>
-        <button onclick="switchTab('monthly')" id="tab-monthly" class="tab-btn py-1.5 rounded-lg transition text-[#6E6355]">월간</button>
-        <button onclick="switchTab('yearly')" id="tab-yearly" class="tab-btn py-1.5 rounded-lg transition text-[#6E6355]">연간</button>
-      </div>
-
-      <!-- 그래프 및 시각화 영역 -->
-      <div id="chart-area" class="bg-[#FAF8F5] p-4 rounded-xl border border-[#E8E3DA] mb-3"></div>
-
-      <!-- 요약 정보 영역 -->
-      <div id="stats-summary" class="mb-3"></div>
-
-      <!-- 리스트 영역 -->
-      <div id="history-list" class="max-h-40 overflow-y-auto space-y-2 pr-1 text-xs"></div>
-
-      <button onclick="closeHistoryModal()" class="w-full mt-4 bg-[#6B8E9B] text-white py-2 rounded-xl font-bold text-xs">닫기</button>
-    </div>
-  </div>
-
-  <script>
-    const goalWater = 2300;
-    let currentWater = 0;
-    let currentBeverage = { type: 'water', factor: 1.0, name: '💧 물' };
-    let currentTab = 'daily';
-
-    function getTodayString() {
-      const today = new Date();
-      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    }
-
-    function init() {
-      const savedDate = localStorage.getItem('waterDate');
-      const today = getTodayString();
-
-      if (savedDate && savedDate !== today) {
-        const prevWater = parseFloat(localStorage.getItem('currentWater')) || 0;
-        saveToHistory(savedDate, prevWater);
-
-        currentWater = 0;
-        localStorage.setItem('waterDate', today);
-        localStorage.setItem('currentWater', 0);
-      } else if (!savedDate) {
-        localStorage.setItem('waterDate', today);
-        currentWater = 0;
-      } else {
-        currentWater = parseFloat(localStorage.getItem('currentWater')) || 0;
-      }
-
-      updateUI();
-      scheduleReminders();
-    }
-
-    function saveToHistory(dateStr, waterAmount) {
-      let history = JSON.parse(localStorage.getItem('waterHistory')) || {};
-      history[dateStr] = waterAmount;
-      localStorage.setItem('waterHistory', JSON.stringify(history));
-    }
-
-    function selectBeverage(type, factor, name) {
-      currentBeverage = { type, factor, name };
-      document.querySelectorAll('.bev-btn').forEach(btn => {
-        btn.classList.remove('bg-[#6B8E9B]', 'text-white');
-        btn.classList.add('bg-[#E8E3DA]', 'text-[#6E6355]');
-      });
-      const selectedBtn = document.getElementById(`btn-${type}`);
-      selectedBtn.classList.remove('bg-[#E8E3DA]', 'text-[#6E6355]');
-      selectedBtn.classList.add('bg-[#6B8E9B]', 'text-white');
+    function selectDrink(type, efficiency, el) {
+        currentDrinkEfficiency = efficiency;
+        document.querySelectorAll('.drink-chip').forEach(chip => chip.classList.remove('active'));
+        el.classList.add('active');
     }
 
     function addWater(amount) {
-      const effectiveAmount = Math.round(amount * currentBeverage.factor);
-      currentWater += effectiveAmount;
-      saveData();
-      updateUI();
+        const effectiveAmount = amount > 0 ? amount * currentDrinkEfficiency : amount;
+        const prevWater = currentWater;
+        currentWater = Math.max(0, currentWater + effectiveAmount);
+
+        // 달성 팝업 트리거 조건 (이전에는 100% 미만이었다가 수치가 100% 이상이 되는 순간)
+        if (prevWater < targetWater && currentWater >= targetWater && !isGoalAchieved) {
+            isGoalAchieved = true;
+            showModal();
+        } else if (currentWater < targetWater) {
+            isGoalAchieved = false; // 목표 미치지 못하면 달성 상태 리셋
+        }
+
+        updateWaterUI();
     }
 
-    function subtractWater(amount) {
-      currentWater = Math.max(0, currentWater - amount);
-      saveData();
-      updateUI();
+    function showModal() {
+        const modal = document.getElementById('congratModal');
+        modal.style.display = 'flex';
     }
 
-    function editWaterDirectly() {
-      const input = prompt("현재 마신 총 수분량을 입력하세요 (ml):", currentWater);
-      if (input !== null && !isNaN(input) && input.trim() !== "") {
-        currentWater = Math.max(0, parseInt(input));
-        saveData();
-        updateUI();
-      }
+    function closeModal() {
+        const modal = document.getElementById('congratModal');
+        modal.style.display = 'none';
     }
 
-    function resetWater() {
-      if(confirm('오늘 기록을 초기화할까요?')) {
-        currentWater = 0;
-        saveData();
-        updateUI();
-      }
-    }
+    function updateWaterUI() {
+        const percent = Math.min(100, Math.round((currentWater / targetWater) * 100));
+        document.getElementById('waterPercent').textContent = `${percent}%`;
+        document.getElementById('waterAmountText').textContent = `${Math.round(currentWater).toLocaleString()} / ${targetWater.toLocaleString()} ml`;
+        document.getElementById('waterProgressBar').style.width = `${percent}%`;
 
-    function saveData() {
-      const today = getTodayString();
-      localStorage.setItem('currentWater', currentWater);
-      saveToHistory(today, currentWater);
-    }
-
-    function updateUI() {
-      document.getElementById('total-water').innerText = currentWater.toLocaleString();
-      const glasses = Math.floor(currentWater / 287.5);
-      document.getElementById('glass-count').innerText = `현재 약 ${glasses} / 8잔 완료`;
-
-      let percentage = Math.min((currentWater / goalWater) * 100, 100);
-      document.getElementById('progress-bar').style.width = percentage + '%';
-    }
-
-    // 통계 모달 관련 로직
-    function openHistoryModal() {
-      document.getElementById('history-modal').classList.remove('hidden');
-      switchTab('daily');
-    }
-
-    function closeHistoryModal() {
-      document.getElementById('history-modal').classList.add('hidden');
-    }
-
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-[#6B8E9B]', 'text-white');
-        btn.classList.add('text-[#6E6355]');
-      });
-      const activeBtn = document.getElementById(`tab-${tab}`);
-      activeBtn.classList.add('bg-[#6B8E9B]', 'text-white');
-      activeBtn.classList.remove('text-[#6E6355]');
-
-      renderStats();
-    }
-
-    function renderStats() {
-      const history = JSON.parse(localStorage.getItem('waterHistory')) || {};
-      const historyList = document.getElementById('history-list');
-      const statsSummary = document.getElementById('stats-summary');
-      const chartArea = document.getElementById('chart-area');
-      
-      historyList.innerHTML = '';
-      statsSummary.innerHTML = '';
-      chartArea.innerHTML = '';
-
-      const dates = Object.keys(history).sort();
-      if (dates.length === 0) {
-        chartArea.innerHTML = `<p class="text-center text-gray-400 py-6 text-xs">저장된 과거 기록이 없습니다.</p>`;
-        return;
-      }
-
-      if (currentTab === 'daily') {
-        // 일별 막대그래프 시각화 (최근 7일)
-        const recentDates = dates.slice(-7);
-        let maxVal = Math.max(...recentDates.map(d => history[d]), goalWater);
-
-        let chartHTML = `<p class="text-[11px] font-bold text-[#587B88] mb-3 text-center">📈 최근 7일 섭취 추이</p>`;
-        chartHTML += `<div class="flex justify-between items-end h-28 pt-4 px-2 border-b border-[#E8E3DA]">`;
-
-        recentDates.forEach(d => {
-          const val = history[d];
-          const heightPercent = Math.min(Math.round((val / maxVal) * 100), 100);
-          const isSuccess = val >= goalWater;
-          const shortDate = d.slice(5); // MM-DD
-
-          chartHTML += `
-            <div class="flex flex-col items-center flex-1 group relative">
-              <span class="text-[9px] text-[#587B88] font-bold mb-1">${(val/1000).toFixed(1)}k</span>
-              <div class="w-5 bg-[#E8E3DA] rounded-t-md h-full flex items-end overflow-hidden">
-                <div class="${isSuccess ? 'bg-[#6B8E9B]' : 'bg-[#C2B29F]'} w-full transition-all duration-500 rounded-t-md" style="height: ${heightPercent}%"></div>
-              </div>
-              <span class="text-[10px] text-gray-500 mt-1.5">${shortDate}</span>
-            </div>
-          `;
-        });
-        chartHTML += `</div>`;
-        chartArea.innerHTML = chartHTML;
-
-        // 리스트 표시
-        const sortedDates = [...dates].reverse();
-        sortedDates.forEach(date => {
-          const amount = history[date];
-          const percent = Math.min(Math.round((amount / goalWater) * 100), 100);
-          const isSuccess = amount >= goalWater;
-
-          const item = document.createElement('div');
-          item.className = 'flex justify-between items-center bg-[#FAF8F5] p-2.5 rounded-xl border border-[#E8E3DA]';
-          item.innerHTML = `
-            <div>
-              <span class="font-bold text-[#4A4238]">${date}</span>
-              <span class="text-[10px] text-gray-400 ml-1">(${percent}%)</span>
-            </div>
-            <div class="font-bold ${isSuccess ? 'text-[#6B8E9B]' : 'text-[#8C8275]'}">
-              ${amount.toLocaleString()} ml ${isSuccess ? '🎉' : ''}
-            </div>
-          `;
-          historyList.appendChild(item);
-        });
-
-      } else {
-        // 주간 / 월간 / 연간 통계 계산
-        let targetDays = 7;
-        let titleText = '최근 7일 평균';
-        if (currentTab === 'monthly') { targetDays = 30; titleText = '최근 30일 평균'; }
-        if (currentTab === 'yearly') { targetDays = 365; titleText = '올해 누적 평균'; }
-
-        const now = new Date();
-        let total = 0;
-        let count = 0;
-        let successCount = 0;
-
-        dates.forEach(d => {
-          const recordDate = new Date(d);
-          const diffTime = Math.abs(now - recordDate);
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-          if (diffDays <= targetDays) {
-            const val = history[d];
-            total += val;
-            count++;
-            if (val >= goalWater) successCount++;
-          }
-        });
-
-        const avg = count > 0 ? Math.round(total / count) : 0;
-        const avgPercent = Math.min(Math.round((avg / goalWater) * 100), 100);
-
-        // 차트 영역에 프로그레스 게이지 표시
-        chartArea.innerHTML = `
-          <p class="text-[11px] font-bold text-[#587B88] mb-2 text-center">📊 ${titleText} 목표 달성률</p>
-          <div class="text-center my-2">
-            <span class="text-3xl font-black text-[#587B88]">${avgPercent}%</span>
-            <span class="text-xs text-gray-400"> (일평균 ${avg.toLocaleString()} ml)</span>
-          </div>
-          <div class="w-full bg-[#E8E3DA] rounded-full h-3 overflow-hidden">
-            <div class="bg-[#6B8E9B] h-full rounded-full transition-all duration-500" style="width: ${avgPercent}%"></div>
-          </div>
-        `;
-
-        statsSummary.className = 'bg-[#FAF8F5] p-3 rounded-xl border border-[#E8E3DA] text-xs';
-        statsSummary.innerHTML = `
-          <div class="grid grid-cols-2 gap-2 text-center">
-            <div class="bg-[#F2EFE9] p-2 rounded-lg">
-              <p class="text-[10px] text-gray-500 mb-0.5">총 섭취량</p>
-              <p class="font-bold text-[#587B88] text-sm">${total.toLocaleString()} ml</p>
-            </div>
-            <div class="bg-[#F2EFE9] p-2 rounded-lg">
-              <p class="text-[10px] text-gray-500 mb-0.5">목표 달성 성공</p>
-              <p class="font-bold text-[#6B8E9B] text-sm">${successCount}일 <span class="text-[10px] font-normal text-gray-400">/ ${count}일</span></p>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    function requestNotification() {
-      if (!("Notification" in window)) {
-        alert("이 브라우저는 알림 기능을 지원하지 않습니다.");
-        return;
-      }
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          alert("09:00 시작 8잔 수분 섭취 알람이 설정되었습니다! 💧");
-          new Notification("수분 트래커", { body: "하루 8잔 알람이 활성화되었습니다!" });
+        const cups = (currentWater / 287.5).toFixed(1);
+        if (percent >= 100) {
+            document.getElementById('waterCupCount').innerHTML = `<span style="color: #5b8fb9; font-weight: bold;">🏆 Today Hydration Master</span> (${cups} / 8잔 완료)`;
         } else {
-          alert("알람 권한이 거부되었습니다.");
+            document.getElementById('waterCupCount').textContent = `현재 약 ${cups} / 8잔 완료`;
         }
-      });
     }
 
-    const alarmTimes = ["09:00", "10:50", "12:40", "14:30", "16:20", "18:10", "20:00", "22:00"];
-    function scheduleReminders() {
-      setInterval(() => {
-        const now = new Date();
-        const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        if (alarmTimes.includes(currentTime) && now.getSeconds() === 0) {
-          if (Notification.permission === "granted") {
-            new Notification("💧 물 마실 시간입니다!", {
-              body: `현재 시각 ${currentTime}입니다. 시원한 물 한 잔으로 수분을 보충해 주세요!`
-            });
-          }
-        }
-      }, 1000);
-    }
+    updateWaterUI();
+</script>
 
-    init();
-  </script>
 </body>
 </html>
